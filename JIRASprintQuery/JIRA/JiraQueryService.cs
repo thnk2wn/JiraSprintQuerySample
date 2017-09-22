@@ -9,7 +9,7 @@ namespace JIRASprintQuery.JIRA
 {
     public class JiraQueryService
     {
-        private readonly Jira _jira;        
+        private readonly Jira _jira;
         private readonly ILogger _logger;
         private readonly IIssueTicketConverter _issueTicketConverter;
 
@@ -22,7 +22,7 @@ namespace JIRASprintQuery.JIRA
             _issueTicketConverter = new IssueTicketConverter(_logger);
 #else
             _issueTicketConverter = new IssueTicketScrubConverter(_logger);
-#endif            
+#endif
         }
 
         public async Task<SprintDetails> QuerySprintTickets(string sprintName)
@@ -30,13 +30,13 @@ namespace JIRASprintQuery.JIRA
             var project = await GetTargetProject();
             _logger.Information("Querying issues for {sprintName}", sprintName);
 
-			var allIssues = _jira.Issues.Queryable
-				.Where(i => i.Project == project.Name
-							&& i["Sprint"] == new LiteralMatch(sprintName))
-				.ToList();
+            var allIssues = _jira.Issues.Queryable
+                .Where(i => i.Project == project.Name
+                            && i["Sprint"] == new LiteralMatch(sprintName))
+                .ToList();
 
             // we could filter in server call but we might analyze tasks later.
-			var nonSubTaskIssues = allIssues.Where(
+            var nonSubTaskIssues = allIssues.Where(
                 i => i.Type.Name != "Sub-task").ToList();
 
             _logger.Information("Found {allIssuesCount} issues, " +
@@ -45,7 +45,7 @@ namespace JIRASprintQuery.JIRA
 
             var details = new SprintDetails { Tickets = new List<SprintTicket>() };
 
-            foreach (var issue in nonSubTaskIssues) 
+            foreach (var issue in nonSubTaskIssues)
             {
                 var ticket = await CreateSprintTicket(issue);
                 details.Tickets.Add(ticket);
@@ -75,9 +75,9 @@ namespace JIRASprintQuery.JIRA
         }
 
         private async Task<SprintTicket> CreateSprintTicket(Issue issue)
-		{
+        {
             var ticket = await _issueTicketConverter.CreateSprintTicket(issue);
-			return ticket;
-		}		
+            return ticket;
+        }
     }
 }
