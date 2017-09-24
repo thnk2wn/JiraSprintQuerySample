@@ -47,7 +47,7 @@ namespace JIRASprintQuery.JIRA
 
             foreach (var issue in nonSubTaskIssues)
             {
-                var ticket = await CreateSprintTicket(issue);
+                var ticket = await _issueTicketConverter.CreateSprintTicket(issue);
                 details.Tickets.Add(ticket);
             }
 
@@ -59,7 +59,8 @@ namespace JIRASprintQuery.JIRA
                 TotalDonePoints = details.Tickets.Where(t => t.IsDone).Sum(t => t.Points),
                 ItemsDone = details.Tickets.Count(t => t.IsDone),
                 BugsCreated = details.Tickets.Count(t => t.Type == "Bug" && t.Sprints == 1),
-                BugsAddressed = details.Tickets.Count(t => t.Type == "Bug" && t.IsDone)
+                BugsAddressed = details.Tickets.Count(t => t.Type == "Bug" && t.IsDone),
+                StatusCounts = details.Tickets.GroupBy(t => t.Status).ToDictionary(g => g.Key, g => g.Count())
             };
 
             details.Summary.ItemsRemaining = details.Tickets.Count - details.Summary.ItemsDone;
@@ -72,12 +73,6 @@ namespace JIRASprintQuery.JIRA
             _logger.Information("Querying JIRA project");
             var project = await _jira.Projects.GetProjectAsync(AppSettings.TargetProjectKey);
             return project;
-        }
-
-        private async Task<SprintTicket> CreateSprintTicket(Issue issue)
-        {
-            var ticket = await _issueTicketConverter.CreateSprintTicket(issue);
-            return ticket;
         }
     }
 }

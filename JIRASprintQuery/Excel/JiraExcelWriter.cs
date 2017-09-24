@@ -86,20 +86,25 @@ namespace JIRASprintQuery.Excel
             var sum = details.Summary;
             var rowCount = worksheet.Rows().Count();
 
-            SetBoldCell(worksheet, "A", rowCount + 2, "Points");
-            SetBoldCell(worksheet, "B", rowCount + 2, $"Total: {sum.TotalPoints}, " +
+            SetBoldCell(worksheet, "A", rowCount + 1, "Points");
+            SetBoldCell(worksheet, "B", rowCount + 1, $"Total: {sum.TotalPoints}, " +
                 $"Done: {sum.TotalDonePoints}, Remaining {sum.TotalPoints - sum.TotalDonePoints}");
 
-            SetBoldCell(worksheet, "A", rowCount + 3, "Tickets");
-            SetBoldCell(worksheet, "B", rowCount + 3, $"This sprint: {sum.ItemsThisSprint}, " +
+            SetBoldCell(worksheet, "A", rowCount + 2, "Tickets");
+            SetBoldCell(worksheet, "B", rowCount + 2, $"This sprint: {sum.ItemsThisSprint}, " +
                 $"Prior Sprint(s): {sum.ItemsPriorSprint}, " +
                 $"Total: {details.Tickets.Count}, " +
                 $"Done: {sum.ItemsDone}, " +
                 $"Remaining: {sum.ItemsRemaining}");
 
-            SetBoldCell(worksheet, "A", rowCount + 4, "Bugs");
-            SetBoldCell(worksheet, "B", rowCount + 4, $"Created: {sum.BugsCreated}, " +
+            SetBoldCell(worksheet, "A", rowCount + 3, "Bugs");
+            SetBoldCell(worksheet, "B", rowCount + 3, $"Created: {sum.BugsCreated}, " +
                 $"Addressed: {sum.BugsAddressed}");
+
+            SetBoldCell(worksheet, "A", rowCount + 4, "Status");
+            var statusSummary = string.Join(", ", 
+                sum.StatusCounts.OrderBy(s => s.Key).Select(s => $"{s.Key}: {s.Value}"));
+            SetBoldCell(worksheet, "B", rowCount + 4, statusSummary);
         }
 
         private static void SetupPivotWorksheet(XLWorkbook workbook, string column)
