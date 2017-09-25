@@ -79,7 +79,7 @@ namespace JIRASprintQuery.JIRA
                 // simulate fetching issue, keeping same epic name for same key
                 if (!_epicMap.ContainsKey(epicKey))
                 {
-                    _logger.Information("Querying epic issue {epicKey}", epicKey);
+                    _logger.Information("Querying epic issue {epicKey}", $"XY-{epicKey.Substring(3)}");
                     var epicName = _epics[LoremNET.RandomHelper.Instance.Next(0, _epics.Count - 1)];
                     _epicMap.Add(epicKey, epicName);
                 }
