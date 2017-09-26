@@ -7,6 +7,7 @@ using CsvHelper;
 using CsvHelper.Excel;
 using Serilog;
 using JIRASprintQuery.JIRA;
+using CsvHelper.Configuration;
 
 namespace JIRASprintQuery.Excel
 {
@@ -49,7 +50,10 @@ namespace JIRASprintQuery.Excel
         {
             SetupHeaderRow(worksheet, XLColor.LightGoldenrodYellow);
 
-            using (var writer = new CsvWriter(new ExcelSerializer(worksheet)))
+            // Without this, any quotes in title get double quoted and some w/o quotes are surrounded by quotes.
+            var csvConfig = new CsvConfiguration { QuoteNoFields = true };
+
+            using (var writer = new CsvWriter(new ExcelSerializer(worksheet, csvConfig)))
             {
                 writer.WriteRecords(details.Tickets);
             }
