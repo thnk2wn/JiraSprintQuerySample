@@ -27,11 +27,10 @@ namespace JIRASprintQuery.JIRA
 
         public async Task<SprintDetails> QuerySprintTickets(string sprintName)
         {
-            var project = await GetTargetProject();
             _logger.Information("Querying issues for {sprintName}", sprintName);
 
             var allIssues = _jira.Issues.Queryable
-                .Where(i => i.Project == project.Name
+                .Where(i => i.Project == AppSettings.TargetProjectName
                             && i["Sprint"] == new LiteralMatch(sprintName))
                 .ToList();
 
@@ -66,13 +65,6 @@ namespace JIRASprintQuery.JIRA
             details.Summary.ItemsRemaining = details.Tickets.Count - details.Summary.ItemsDone;
 
             return details;
-        }
-
-        private async Task<Project> GetTargetProject()
-        {
-            _logger.Information("Querying JIRA project");
-            var project = await _jira.Projects.GetProjectAsync(AppSettings.TargetProjectKey);
-            return project;
         }
     }
 }

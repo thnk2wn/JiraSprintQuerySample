@@ -11,7 +11,7 @@ namespace JIRASprintQuery.IO
         public static string SprintNamePattern
             => ConfigurationManager.AppSettings["SprintNamePattern"];
 
-        public static string TargetProjectKey
-            => ConfigurationManager.AppSettings["TargetProjectKey"];
+        public static string TargetProjectName
+            => ConfigurationManager.AppSettings["TargetProjectName"];
     }
 }
