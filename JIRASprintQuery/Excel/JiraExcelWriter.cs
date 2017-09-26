@@ -109,25 +109,29 @@ namespace JIRASprintQuery.Excel
 
         private static void SetupPivotWorksheet(XLWorkbook workbook, string column)
         {
-            // Sheets are 1 based:
+            // Sheets are 1-based. Setup pivot data range.
             var ticketsSheet = workbook.Worksheet(1);
-            var ticketsDataRange = ticketsSheet.RangeUsed();
-            var ticketsDataTable = ticketsDataRange.AsTable();
+            var ticketsDataTable = ticketsSheet.RangeUsed().AsTable();
             var ticketsHeader = ticketsDataTable.Range(1, 1, 1, 3);
             var dataRange = ticketsSheet.Range(ticketsHeader.FirstCell(), ticketsDataTable.DataRange.LastCell());
 
+            // Add pivot worksheet and pivot table with data range.
             var pivotWorksheet = workbook.AddWorksheet($"{column} Counts");
-
             var pivot = pivotWorksheet.PivotTables.AddNew($"{column}PivotTable", pivotWorksheet.Cell(1, 1), dataRange);
             pivot.AutofitColumns = true;
 
-            var statusField = pivot.RowLabels.Add(column);
-            statusField.ShowBlankItems = false;
-            statusField.Collapsed = true;
+            // Setup pivot field
+            var pivotField = pivot.RowLabels.Add(column);
+            pivotField.ShowBlankItems = false;
+            pivotField.Collapsed = true;
 
-            var statusValues = pivot.Values.Add(column, $"Count of {column}");
-            statusValues.SummaryFormula = XLPivotSummary.Count;
+            // Configure pivot values
+            var pivotValues = pivot.Values.Add(column, $"Count of {column}");
+            pivotValues.SummaryFormula = XLPivotSummary.Count;
 
+            // Add nested row label with row details for use when pivot field value is expanded.
+            // Bit of a hack to workaround not being able to get multiple row labels on same level (all nested).
+            // Assumes {column}RowText column exists - corresponding object property combines multiple key fields in one.
             pivot.RowLabels.Add($"{column}RowText");
 
             //pivotWorksheet.Columns().AdjustToContents(); // not working

@@ -36,6 +36,5 @@ namespace JIRASprintQuery
 
             return 0;
         }
-
     }
 }
